@@ -9,7 +9,8 @@ const app = express()
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://your-vercel-url.vercel.app'
+    'https://quickform-dss2umirj-rbiswas224.vercel.app',
+    'https://quickform.vercel.app'
   ]
 }))
 app.use(express.json())
