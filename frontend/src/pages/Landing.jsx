@@ -118,11 +118,9 @@ export default function Landing() {
 
           <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
             <span className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-semibold px-3.5 py-1.5 rounded-full uppercase tracking-wider shadow-sm select-none">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Free Forever Platform
             </span>
             <span className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-semibold px-3.5 py-1.5 rounded-full uppercase tracking-wider shadow-sm select-none">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               Private Submission Platform
             </span>
           </div>
