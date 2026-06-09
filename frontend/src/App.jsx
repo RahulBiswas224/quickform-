@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard'
 import Builder from './pages/Builder'
 import PublicForm from './pages/PublicForm'
 import Responses from './pages/Responses'
+import Landing from './pages/Landing'
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth()
@@ -18,13 +19,14 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<Landing />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/f/:slug" element={<PublicForm />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/builder/:id" element={<ProtectedRoute><Builder /></ProtectedRoute>} />
           <Route path="/responses/:formId" element={<ProtectedRoute><Responses /></ProtectedRoute>} />
-          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
