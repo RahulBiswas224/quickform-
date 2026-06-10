@@ -2,68 +2,65 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
+import { useToast } from '../context/ToastContext'
 
 export default function Dashboard() {
   const [forms, setForms] = useState([])
   const [loading, setLoading] = useState(true)
   const [copiedId, setCopiedId] = useState(null) // State track helper for temporary copy success states
   const navigate = useNavigate()
+  const { showToast } = useToast()
 
   useEffect(() => {
     api.get('/forms')
       .then(res => setForms(res.data))
       .finally(() => setLoading(false))
   }, [])
-
-  const createForm = async () => {
-    try {
-      const res = await api.post('/forms', { title: 'Untitled Form' })
-      navigate(`/builder/${res.data.id}`)
-    } catch (err) {
-      alert('Failed to create form')
-    }
+  
+const createForm = async () => {
+  try {
+    const res = await api.post('/forms', { title: 'Untitled Form' })
+    navigate(`/builder/${res.data.id}`)
+  } catch (err) {
+    showToast('Failed to create form', 'error')
   }
+}
 
-  const deleteForm = async (id) => {
-    if (!confirm('Delete this form?')) return
-    await api.delete(`/forms/${id}`)
-    setForms(forms.filter(f => f.id !== id))
+const deleteForm = async (id) => {
+  if (!confirm('Delete this form?')) return
+  await api.delete(`/forms/${id}`)
+  setForms(forms.filter(f => f.id !== id))
+  showToast('Form deleted', 'success')
+}
+
+const togglePublish = async (id) => {
+  const res = await api.patch(`/forms/${id}/publish`)
+  setForms(forms.map(f => f.id === id ? res.data : f))
+  showToast(res.data.isPublished ? 'Form published' : 'Form unpublished', 'info')
+}
+
+const handleCopyLink = async (slug, id) => {
+  const publicUrl = `${window.location.origin}/f/${slug}`
+  try {
+    await navigator.clipboard.writeText(publicUrl)
+    setCopiedId(id)
+    setTimeout(() => setCopiedId(null), 2000)
+    showToast('Link copied to clipboard!', 'success')
+  } catch (err) {
+    showToast('Failed to copy link', 'error')
   }
+}
 
-  const togglePublish = async (id, current) => {
-    const res = await api.patch(`/forms/${id}/publish`)
-    setForms(forms.map(f => f.id === id ? res.data : f))
+const handleExpiryChange = async (id, dateValue) => {
+  try {
+    const isoDate = dateValue ? new Date(dateValue).toISOString() : null
+    const res = await api.put(`/forms/${id}`, { expiresAt: isoDate })
+    setForms(forms.map(f => f.id === id ? { ...f, expiresAt: isoDate } : f))
+    showToast('Expiry date updated', 'success')
+  } catch (err) {
+    showToast('Failed to update expiry date', 'error')
   }
-
-  // Feature A: Interactive clipboard copy routine
-  const handleCopyLink = async (slug, id) => {
-    const publicUrl = `${window.location.origin}/f/${slug}`
-    try {
-      await navigator.clipboard.writeText(publicUrl)
-      setCopiedId(id)
-      setTimeout(() => setCopiedId(null), 2000)
-    } catch (err) {
-      console.error('Failed to copy text', err)
-    }
-  }
-
-  // Feature E: Expiry context tracking update submission
-  const handleExpiryChange = async (id, dateValue) => {
-    try {
-      const isoDate = dateValue ? new Date(dateValue).toISOString() : null
-      
-      // Send dynamic update mutation back to forms context backend
-      const res = await api.put(`/forms/${id}`, {
-        expiresAt: isoDate
-      })
-      
-      // Synchronize client component list item array state
-      setForms(forms.map(f => f.id === id ? { ...f, expiresAt: isoDate } : f))
-    } catch (err) {
-      alert('Failed to update form expiration deadline')
-    }
-  }
-
+}
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -93,7 +90,14 @@ export default function Dashboard() {
               <div className="space-y-1">
                 <h2 className="font-semibold text-gray-800 text-base">{form.title}</h2>
                 <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400">
-                  <span>{form.isPublished ? '🟢 Published' : '⚪ Draft'}</span>
+                  {/* <span>{form.isPublished ? '🟢 Published' : '⚪ Draft'}</span> */}
+                  <span>
+                    {form.expiresAt && new Date() > new Date(form.expiresAt)
+                      ? '🔴 Expired'
+                      : form.isPublished
+                      ? '🟢 Published'
+                      : '⚪ Draft'}
+                  </span>
                   <span>•</span>
                   <span className="font-mono bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">Formid: {form.slug}</span>
                 </div>

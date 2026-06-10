@@ -13,6 +13,9 @@ router.post('/:formId', async (req, res) => {
     })
     if (!form) return res.status(404).json({ error: 'Form not found' })
     if (!form.isPublished) return res.status(403).json({ error: 'Form is not accepting responses' })
+    if (form.expiresAt && new Date() > new Date(form.expiresAt)) {
+      return res.status(403).json({ error: 'This form has expired' })
+    }  
 
     const response = await db.response.create({
       data: { answers, formId: form.id }

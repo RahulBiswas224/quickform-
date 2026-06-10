@@ -23,6 +23,7 @@ model Form {
   slug        String     @unique
   fields      Json       @default("[]")
   isPublished Boolean    @default(false)
+  expiresAt   DateTime?
   userId      Int
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   responses   Response[]

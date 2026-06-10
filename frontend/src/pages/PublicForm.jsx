@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import api from '../lib/api'
+import { useToast } from '../context/ToastContext'
+
 
 export default function PublicForm() {
   const { slug } = useParams()
@@ -9,6 +11,7 @@ export default function PublicForm() {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
+  const { showToast } = useToast()
 
   useEffect(() => {
     api.get(`/forms/public/${slug}`)
@@ -27,12 +30,22 @@ export default function PublicForm() {
       await api.post(`/responses/${form.id}`, { answers })
       setSubmitted(true)
     } catch (err) {
-      setError('Failed to submit. Please try again.')
+      showToast('Failed to submit. Please try again.', 'error')
     }
   }
-
   if (loading) return <div className="p-10 text-center text-gray-500">Loading form...</div>
   if (error) return <div className="p-10 text-center text-red-500">{error}</div>
+  if (form?.expiresAt && new Date() > new Date(form.expiresAt)) {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="bg-white p-10 rounded-xl shadow-sm text-center">
+        <div className="text-4xl mb-4">⏰</div>
+        <h2 className="text-xl font-bold text-gray-800">This form has expired</h2>
+        <p className="text-gray-500 mt-2">The form owner is no longer accepting responses.</p>
+      </div>
+    </div>
+    )
+  }
   if (submitted) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white p-10 rounded-xl shadow-sm text-center">

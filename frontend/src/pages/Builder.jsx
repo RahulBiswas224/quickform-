@@ -17,6 +17,7 @@ import {
 import api from '../lib/api'
 import Navbar from '../components/Navbar'
 import FieldCard from '../components/FieldCard'
+import { useToast } from '../context/ToastContext'
 
 const FIELD_TYPES = [
   { type: 'short_text', label: 'Short Text' },
@@ -37,6 +38,7 @@ export default function Builder() {
   const [title, setTitle] = useState('')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const { showToast } = useToast()
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -85,9 +87,10 @@ export default function Builder() {
     try {
       await api.put(`/forms/${id}`, { title, fields })
       setSaved(true)
+      showToast('Form saved successfully', 'success')
       setTimeout(() => setSaved(false), 2000)
     } catch (err) {
-      alert('Failed to save')
+      showToast('Failed to save form', 'error')
     } finally {
       setSaving(false)
     }

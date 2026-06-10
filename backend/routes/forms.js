@@ -61,9 +61,9 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 })
 
-// Update form (title + fields)
+// Update form (title + fields + expiry date)
 router.put('/:id', authMiddleware, async (req, res) => {
-  const { title, fields } = req.body
+  const { title, fields, expiresAt } = req.body
   try {
     const form = await db.form.findFirst({
       where: { id: Number(req.params.id), userId: req.user.id }
@@ -72,13 +72,18 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
     const updated = await db.form.update({
       where: { id: Number(req.params.id) },
-      data: { title, fields }
+      data: {
+        ...(title !== undefined && { title }),
+        ...(fields !== undefined && { fields }),
+        ...(expiresAt !== undefined && { expiresAt: expiresAt ? new Date(expiresAt) : null })
+      }
     })
     res.json(updated)
   } catch (err) {
+    console.error(err)
     res.status(500).json({ error: 'Failed to update form' })
   }
-})
+})  
 
 // Toggle publish
 router.patch('/:id/publish', authMiddleware, async (req, res) => {
