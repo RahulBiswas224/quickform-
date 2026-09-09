@@ -1,8 +1,16 @@
-# QuickForm 📋
+# QuickForm
 
 A full-stack form builder application where users can create, publish, and share custom forms — and collect responses in real time.
 
 **Live Demo:** [quickform.vercel.app](https://quickform.vercel.app)
+
+---
+
+## Screenshots
+
+| Home Page | Field Editor | Live Form
+|---|---|---|
+| ![Home Page](./display.png) | ![Field Editor](./form%201.png) | ![Form Builder](./form.png)
 
 ---
 
