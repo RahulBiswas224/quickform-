@@ -8,10 +8,14 @@ A full-stack form builder application where users can create, publish, and share
 
 ## Screenshots
 
-| Home Page | Field Editor | Live Form
-|---|---|---|
-| ![Home Page](./display.png) | ![Field Editor](./form%201.png) | ![Form Builder](./form.png)
-
+| Home Pgae | 
+|---|
+![Home Page](./display.png)
+ 
+| Field Editor | Live Form |
+|---|---|
+| ![Field Editor](./form%201.png) | ![Live Form](./form.png) |
+ 
 ---
 
 ## Features
